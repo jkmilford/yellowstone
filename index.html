@@ -1,354 +1,343 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yellowstone Wildlife — Field Match</title>
-<meta name="description" content="Play a fun free Yellowstone Wildlife memory matching game. Match animals and learn interesting field facts!">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --obsidian:#0E1A18;
-    --obsidian-2:#13241F;
-    --panel:#16302A;
-    --panel-2:#1B3A32;
-    --spring-blue:#1C7FA0;
-    --spring-teal:#34B0A0;
-    --mat-green:#7DB23E;
-    --mat-gold:#E9B53D;
-    --mat-orange:#DD7A2E;
-    --mat-rust:#B0431F;
-    --steam:#F2ECDD;
-    --steam-dim:#AEB8AE;
-    --line:#2C5044;
-    --card-cream:#f5edd9;
-    --card-cream2:#e4d6b4;
-    --ink:#2a2114;
-    --ink-soft:#5a4a31;
-    --r:14px;
-    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    background: radial-gradient(1200px 700px at 70% -10%, rgba(52,176,160,.10), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(221,122,46,.08), transparent 55%), var(--obsidian);
-    color:var(--steam);
-    font-family:'Inter',system-ui,sans-serif;
-    line-height:1.5;
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:780px;margin:0 auto;padding:22px 18px 64px}
+:root{
+--obsidian:#0E1A18;--obsidian-2:#13241F;--panel:#16302A;--spring-blue:#1C7FA0;--spring-teal:#34B0A0;
+--mat-green:#7DB23E;--mat-gold:#E9B53D;--mat-orange:#DD7A2E;--mat-rust:#B0431F;
+--steam:#F2ECDD;--steam-dim:#AEB8AE;--line:#2C5044;--card-cream:#f5edd9;--card-cream2:#e4d6b4;
+--ink:#2a2114;--ink-soft:#5a4a31;--shadow:0 18px 40px -18px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(1200px 700px at 70% -10%, rgba(52,176,160,.10), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(221,122,46,.08), transparent 55%), var(--obsidian);color:var(--steam);font-family:'Inter',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
 
-  .back-link {
-    color: var(--steam-dim);
-    text-decoration: none;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.9rem;
-    letter-spacing: .06em;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 12px 0 8px;
-  }
-  .back-link:hover { color: var(--steam); }
-
-  header.hud{display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);}
-  .badge{flex:none;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 22%,var(--spring-teal) 22% 40%,var(--mat-green) 40% 58%,var(--mat-gold) 58% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15), 0 4px 12px -4px rgba(0,0,0,.6);}
-  .titles h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.34rem;line-height:1.05;margin:0;letter-spacing:.2px;}
-  .titles p{margin:3px 0 0;font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);}
-
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 12px;}
-  .seg{display:inline-flex;gap:4px;padding:4px;border-radius:11px;background:var(--obsidian-2);border:1px solid var(--line);}
-  .seg button{appearance:none;border:0;cursor:pointer;color:var(--steam-dim);font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:7px 13px;border-radius:8px;background:transparent;transition:background .15s,color .15s;}
-  .seg button[aria-pressed="true"]{background:linear-gradient(180deg,#27513C,var(--panel));color:var(--steam);box-shadow:inset 0 0 0 1px rgba(233,181,61,.4);}
-  .spacer{flex:1 1 auto}
-  .ghost{appearance:none;cursor:pointer;color:var(--steam);font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:9px 15px;border-radius:10px;background:var(--panel);border:1px solid var(--line);transition:border-color .15s;}
-  .ghost:hover{border-color:var(--mat-gold)}
-
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
-  .stat{flex:1 1 0;min-width:96px;background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;}
-  .stat .k{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);}
-  .stat .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;line-height:1.1;margin-top:2px;}
-
-  .board{display:grid;gap:11px;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
-  @media(max-width:430px){.board{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}}
-  .card{appearance:none;border:0;background:transparent;padding:0;cursor:pointer;aspect-ratio:3/4;perspective:800px;border-radius:11px;}
-  .card:focus-visible{outline:2px solid var(--mat-gold);outline-offset:3px;border-radius:12px}
-  .card .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.7,.2,1);border-radius:11px;}
-  .card.flipped .inner,.card.matched .inner{transform:rotateY(180deg)}
-  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:11px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-  .back{background:linear-gradient(160deg,var(--spring-blue),var(--spring-teal));box-shadow:inset 0 0 0 2px rgba(14,26,24,.35), inset 0 0 26px rgba(0,0,0,.28);}
-  .back .paw{width:54%;height:54%;color:var(--mat-gold);filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));}
-  .front{transform:rotateY(180deg);background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));box-shadow:inset 0 0 0 2px rgba(176,67,31,.25), inset 0 0 0 5px rgba(245,237,217,.6);flex-direction:column;gap:5px;padding:8px 6px;}
-  .front .spec{height:48%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;line-height:1;color:var(--ink);}
-  .front .spec svg{height:1.4em;width:auto;display:block}
-  .front .nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.74rem;line-height:1.05;text-align:center;color:var(--ink);padding:0 2px;}
-  @media(max-width:430px){.front .spec{font-size:2rem}.front .nm{font-size:.64rem}}
-  .card.matched{cursor:default}
-  .card.matched .front{box-shadow:inset 0 0 0 2px var(--mat-gold), inset 0 0 0 5px rgba(245,237,217,.6);animation:pop .4s ease;}
-  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
-
-  .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:35;overflow:hidden}
-  .spark{position:fixed;width:10px;height:10px;border-radius:2px;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.25);animation:burst var(--dur,3000ms) linear forwards;}
-  @keyframes burst{0%{transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35);opacity:0}6%{opacity:1}24%{transform:translate(-50%,-50%) translate(var(--x),var(--y1)) rotate(calc(var(--rot)*.35)) scale(1);opacity:1}82%{opacity:1}100%{transform:translate(-50%,-50%) translate(var(--x2),var(--y2)) rotate(var(--rot)) scale(.85);opacity:0}}
-  .fx-ring{position:fixed;width:22px;height:22px;border-radius:50%;border:3px solid var(--mat-gold);transform:translate(-50%,-50%);animation:ring 1700ms ease-out forwards;}
-  @keyframes ring{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}55%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) scale(3.6)}}
-
-  .fieldnote{margin-top:20px;border-radius:16px;background:linear-gradient(165deg,var(--card-cream),var(--card-cream2));border:1px solid rgba(176,67,31,.3);box-shadow:var(--shadow), inset 0 0 0 4px rgba(245,237,217,.55);padding:22px 24px;color:var(--ink);opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;min-height:118px;}
-  .fieldnote.show{opacity:1;transform:none}
-  .fieldnote .eyebrow{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mat-rust);margin-bottom:4px;}
-  .fieldnote .who{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-  .fieldnote .who .ic{font-size:2rem;line-height:1}
-  .fieldnote .who h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;line-height:1.05;margin:0;color:var(--ink);}
-  .fieldnote .fact{font-size:1.2rem;line-height:1.62;color:var(--ink);max-width:60ch;}
-  .fieldnote .empty{font-size:1.05rem;line-height:1.6;color:var(--ink-soft);font-style:italic;}
-  @media(max-width:430px){.fieldnote{padding:18px 18px}.fieldnote .who h2{font-size:1.3rem}.fieldnote .fact{font-size:1.12rem;line-height:1.58}}
-
-  .overlay{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto;z-index:40;background:rgba(8,16,14,.72);backdrop-filter:blur(3px);}
-  .overlay.show{display:flex}
-  .sheet{width:100%;max-width:680px;margin:auto 0;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:26px 26px 28px;}
-  .crest{width:74px;height:74px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 20%,var(--spring-teal) 20% 38%,var(--mat-green) 38% 56%,var(--mat-gold) 56% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);}
-  .sheet h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-align:center;font-size:1.8rem;margin:0;line-height:1.05;}
-  .rank{text-align:center;font-family:'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mat-gold);font-size:.84rem;margin:6px 0 2px;}
-  .runline{text-align:center;color:var(--steam-dim);font-size:.92rem;margin:0 0 18px;}
-  .guide-title{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--steam-dim);margin:0 0 10px;}
-  .guide{display:flex;flex-direction:column;gap:10px}
-  .entry{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));border-radius:13px;padding:14px 16px;color:var(--ink);box-shadow:inset 0 0 0 3px rgba(245,237,217,.5);}
-  .entry .ic{flex:none;font-size:1.9rem;line-height:1;width:40px;text-align:center}
-  .entry .tx h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.12rem;line-height:1.1;margin:0 0 3px;color:var(--ink);}
-  .entry .tx p{margin:0;font-size:1.04rem;line-height:1.55;color:var(--ink);}
-  @media(max-width:430px){.entry .tx p{font-size:1rem}}
-  .winfoot{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
-  .primary{appearance:none;border:0;cursor:pointer;font-family:'Space Mono',monospace;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 22px;border-radius:11px;color:var(--obsidian);background:linear-gradient(180deg,var(--mat-gold),var(--mat-orange));box-shadow:0 8px 20px -8px rgba(221,122,46,.7);}
+@keyframes burst{0%{transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35);opacity:0}6%{opacity:1}24%{transform:translate(-50%,-50%) translate(var(--x),var(--y1)) rotate(calc(var(--rot)*.35)) scale(1);opacity:1}82%{opacity:1}100%{transform:translate(-50%,-50%) translate(var(--x2),var(--y2)) rotate(var(--rot)) scale(.85);opacity:0}}
+@keyframes ring{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}55%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) scale(3.6)}}
+.spark{position:fixed;width:10px;height:10px;border-radius:2px;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.25);animation:burst var(--dur,3000ms) linear forwards;}
+.fx-ring{position:fixed;width:22px;height:22px;border-radius:50%;border:3px solid var(--mat-gold);transform:translate(-50%,-50%);animation:ring 1700ms ease-out forwards;}
 </style>
-</head>
-<body>
-<div class="wrap">
-  <a href="https://parkadventureseries.com/" class="back-link">← Back to Park Adventure Series</a>
+</helmet>
 
-  <header class="hud">
-    <div class="badge" aria-hidden="true"></div>
-    <div class="titles">
-      <h1>Yellowstone Wildlife — Field Match</h1>
-      <p>Flip the rings · match the pair · log the fact</p>
+<div style="max-width:780px;margin:0 auto;padding:22px 18px 64px;">
+
+  <a href="https://parkadventureseries.com/" style="color:var(--steam-dim);text-decoration:none;font-family:'Space Mono',monospace;font-size:.9rem;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px;margin:12px 0 8px;">← Back to Park Adventure Series</a>
+
+  <header style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);">
+    <div aria-hidden="true" style="flex:none;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 22%,var(--spring-teal) 22% 40%,var(--mat-green) 40% 58%,var(--mat-gold) 58% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15), 0 4px 12px -4px rgba(0,0,0,.6);"></div>
+    <div>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.34rem;line-height:1.05;margin:0;letter-spacing:.2px;">Yellowstone Wildlife — Field Match</h1>
+      <p style="margin:3px 0 0;font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);">Flip the cards · match the pair · log the fact</p>
     </div>
   </header>
 
-  <div class="toolbar">
-    <div class="seg" role="group" aria-label="Difficulty">
-      <button type="button" data-diff="easy" aria-pressed="true">Easy</button>
-      <button type="button" data-diff="medium" aria-pressed="false">Medium</button>
-      <button type="button" data-diff="hard" aria-pressed="false">Hard</button>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 12px;">
+    <div role="group" aria-label="Difficulty" style="display:inline-flex;gap:4px;padding:4px;border-radius:11px;background:var(--obsidian-2);border:1px solid var(--line);">
+      <button type="button" onClick="{{ setEasy }}" aria-pressed="{{ isEasy }}" style="{{ easyStyle }}">Easy</button>
+      <button type="button" onClick="{{ setMedium }}" aria-pressed="{{ isMedium }}" style="{{ medStyle }}">Medium</button>
+      <button type="button" onClick="{{ setHard }}" aria-pressed="{{ isHard }}" style="{{ hardStyle }}">Hard</button>
     </div>
-    <span class="spacer"></span>
-    <button type="button" class="ghost" id="newRound">New round</button>
+    <span style="flex:1 1 auto;"></span>
+    <button type="button" onClick="{{ onNewRound }}" style="appearance:none;cursor:pointer;color:var(--steam);font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:9px 15px;border-radius:10px;background:var(--panel);border:1px solid var(--line);">New round</button>
   </div>
 
-  <div class="stats">
-    <div class="stat"><div class="k">Moves</div><div class="v" id="sMoves">0</div></div>
-    <div class="stat"><div class="k">Time</div><div class="v" id="sTime">0:00</div></div>
-    <div class="stat"><div class="k">Pairs</div><div class="v" id="sPairs">0/8</div></div>
-    <div class="stat"><div class="k">Best moves</div><div class="v" id="sBest">—</div></div>
-  </div>
-
-  <div class="board" id="board" aria-label="Matching board"></div>
-
-  <div class="fieldnote" id="note" aria-live="polite">
-    <div class="empty" id="noteEmpty">Match a pair to add a Yellowstone field note here.</div>
-    <div id="noteBody" hidden>
-      <div class="eyebrow">Field note</div>
-      <div class="who"><span class="ic" id="noteIc"></span><h2 id="noteName"></h2></div>
-      <div class="fact" id="noteFact"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;">
+    <div style="flex:1 1 0;min-width:96px;background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;">
+      <div style="font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);">Moves</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;line-height:1.1;margin-top:2px;">{{ moves }}</div>
+    </div>
+    <div style="flex:1 1 0;min-width:96px;background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;">
+      <div style="font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);">Time</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;line-height:1.1;margin-top:2px;">{{ timeLabel }}</div>
+    </div>
+    <div style="flex:1 1 0;min-width:96px;background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;">
+      <div style="font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);">Pairs</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;line-height:1.1;margin-top:2px;">{{ pairsLabel }}</div>
     </div>
   </div>
+
+  <div aria-label="Matching board" style="display:grid;gap:11px;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));">
+    <sc-for list="{{ cards }}" as="card" hint-placeholder-count="8">
+      <button type="button" onClick="{{ card.onClick }}" aria-label="{{ card.aria }}" style="appearance:none;border:0;background:transparent;padding:0;cursor:pointer;aspect-ratio:3/4;perspective:800px;border-radius:11px;">
+        <div style="{{ card.innerStyle }}">
+          <div style="{{ card.backStyle }}">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:54%;height:54%;color:var(--mat-gold);filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));" fill="currentColor">
+              <path d="M32 32.5 C25.5 32.5 18.6 36.6 17.6 44 C16.8 50.2 19.9 55.4 25.2 56 C28.2 56.3 30 53 32 53 C34 53 35.8 56.3 38.8 56 C44.1 55.4 47.2 50.2 46.4 44 C45.4 36.6 38.5 32.5 32 32.5 Z"></path>
+              <ellipse cx="23" cy="18.5" rx="5" ry="7.1" transform="rotate(-13 23 18.5)"></ellipse>
+              <ellipse cx="41" cy="18.5" rx="5" ry="7.1" transform="rotate(13 41 18.5)"></ellipse>
+              <ellipse cx="11.5" cy="30" rx="4.6" ry="6.6" transform="rotate(-31 11.5 30)"></ellipse>
+              <ellipse cx="52.5" cy="30" rx="4.6" ry="6.6" transform="rotate(31 52.5 30)"></ellipse>
+            </svg>
+          </div>
+          <div style="{{ card.frontStyle }}">
+            <img src="{{ card.img }}" alt="{{ card.name }}" style="{{ card.imgStyle }}">
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:20px 6px 7px;background:linear-gradient(to top, rgba(8,16,14,.94), rgba(8,16,14,.5) 60%, transparent);font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;line-height:1.05;text-align:center;color:var(--steam);">{{ card.name }}</div>
+            <div style="{{ card.ringStyle }}"></div>
+          </div>
+        </div>
+      </button>
+    </sc-for>
+  </div>
+
+  <div aria-live="polite" style="margin-top:20px;border-radius:16px;background:linear-gradient(165deg,var(--card-cream),var(--card-cream2));border:1px solid rgba(176,67,31,.3);box-shadow:var(--shadow), inset 0 0 0 4px rgba(245,237,217,.55);padding:18px 20px;color:var(--ink);min-height:120px;display:flex;align-items:center;">
+    <sc-if value="{{ note.empty }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:1.05rem;line-height:1.6;color:var(--ink-soft);font-style:italic;">Match a pair to add a Yellowstone field note here.</div>
+    </sc-if>
+    <sc-if value="{{ note.shown }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:16px;align-items:center;width:100%;">
+        <img src="{{ note.img }}" alt="{{ note.name }}" style="flex:none;width:96px;height:120px;object-fit:cover;border-radius:11px;box-shadow:inset 0 0 0 3px rgba(245,237,217,.7), 0 6px 14px -8px rgba(0,0,0,.5);">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mat-rust);margin-bottom:3px;">Field note</div>
+          <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;line-height:1.05;margin:0 0 7px;color:var(--ink);">{{ note.name }}</h2>
+          <div style="font-size:1.12rem;line-height:1.58;color:var(--ink);max-width:46ch;">{{ note.fact }}</div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ win.show }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" style="position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto;z-index:40;background:rgba(8,16,14,.72);backdrop-filter:blur(3px);">
+      <div style="width:100%;max-width:680px;margin:auto 0;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:26px 26px 28px;">
+        <div aria-hidden="true" style="width:74px;height:74px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 20%,var(--spring-teal) 20% 38%,var(--mat-green) 38% 56%,var(--mat-gold) 56% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);"></div>
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-align:center;font-size:1.8rem;margin:0;line-height:1.05;">Expedition complete</h2>
+        <div style="text-align:center;font-family:'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mat-gold);font-size:.84rem;margin:6px 0 2px;">{{ win.rank }}</div>
+        <p style="text-align:center;color:var(--steam-dim);font-size:.92rem;margin:0 0 18px;">{{ win.runLine }}</p>
+        <p style="font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--steam-dim);margin:0 0 10px;">Field guide — what you logged</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ win.guide }}" as="g" hint-placeholder-count="3">
+            <div style="display:flex;gap:14px;align-items:center;background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));border-radius:13px;padding:12px 14px;color:var(--ink);box-shadow:inset 0 0 0 3px rgba(245,237,217,.5);">
+              <img src="{{ g.img }}" alt="{{ g.name }}" style="flex:none;width:58px;height:58px;object-fit:cover;border-radius:10px;">
+              <div>
+                <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.12rem;line-height:1.1;margin:0 0 3px;color:var(--ink);">{{ g.name }}</h3>
+                <p style="margin:0;font-size:1.02rem;line-height:1.5;color:var(--ink);">{{ g.fact }}</p>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;">
+          <button type="button" onClick="{{ win.onAgain }}" style="appearance:none;border:0;cursor:pointer;font-family:'Space Mono',monospace;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 22px;border-radius:11px;color:var(--obsidian);background:linear-gradient(180deg,var(--mat-gold),var(--mat-orange));box-shadow:0 8px 20px -8px rgba(221,122,46,.7);">Play again</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div ref="{{ fxRef }}" style="position:fixed;inset:0;pointer-events:none;z-index:35;overflow:hidden;"></div>
 </div>
 
-<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-  <div class="sheet">
-    <div class="crest" aria-hidden="true"></div>
-    <h2 id="winTitle">Expedition complete</h2>
-    <div class="rank" id="winRank">Field Ranger</div>
-    <p class="runline" id="winRun"></p>
-    <p class="guide-title">Field guide — what you logged</p>
-    <div class="guide" id="guide"></div>
-    <div class="winfoot">
-      <button type="button" class="primary" id="again">Play again</button>
-    </div>
-  </div>
-</div>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" rx="20" fill="#13241F"/>
+    <circle cx="50" cy="50" r="23" fill="#1C7FA0"/>
+    <g fill="#E9B53D" transform="translate(35 35) scale(.47)">
+      <path d="M32 32.5 C25.5 32.5 18.6 36.6 17.6 44 C16.8 50.2 19.9 55.4 25.2 56 C28.2 56.3 30 53 32 53 C34 53 35.8 56.3 38.8 56 C44.1 55.4 47.2 50.2 46.4 44 C45.4 36.6 38.5 32.5 32 32.5 Z"></path>
+      <ellipse cx="23" cy="18.5" rx="5" ry="7.1" transform="rotate(-13 23 18.5)"></ellipse>
+      <ellipse cx="41" cy="18.5" rx="5" ry="7.1" transform="rotate(13 41 18.5)"></ellipse>
+      <ellipse cx="11.5" cy="30" rx="4.6" ry="6.6" transform="rotate(-31 11.5 30)"></ellipse>
+      <ellipse cx="52.5" cy="30" rx="4.6" ry="6.6" transform="rotate(31 52.5 30)"></ellipse>
+    </g>
+  </svg>
+</template></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:780,&quot;height&quot;:940},&quot;defaultDifficulty&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;easy&quot;,&quot;medium&quot;,&quot;hard&quot;],&quot;default&quot;:&quot;easy&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;cardBack&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#1C7FA0&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  static ANIMALS = [
+    {key:"bison",  name:"American Bison",  img:"images/bison.jpg",    zoom:1.32, focus:'47% 62%', fact:"North America's largest land animal — up to 2,000 lb, yet it can sprint at 35 mph."},
+    {key:"wolf",   name:"Gray Wolf",       img:"images/wolf.jpg",     fact:"Returned to the park in 1995. As packs thinned the elk herds, willows recovered and rivers steadied."},
+    {key:"bear",   name:"Grizzly Bear",    img:"images/bear.jpg",     fact:"It can smell food from over a mile away and packs on weight fast before denning for winter."},
+    {key:"elk",    name:"Elk",             img:"images/elk.jpg",      fact:"The park's most abundant large mammal. In autumn, bull elk bugle to challenge rivals and gather harems."},
+    {key:"eagle",  name:"Bald Eagle",      img:"images/eagle.jpg",    fact:"It builds some of the largest tree nests of any North American bird, adding to the same nest for years."},
+    {key:"osprey", name:"Osprey",          img:"images/osprey.jpg",   fact:"A fish hawk that hovers, then dives feet-first — barbed pads and a reversible toe lock onto slippery prey."},
+    {key:"otter",  name:"River Otter",     img:"images/otter.jpg",    zoom:1.55, focus:'48% 40%', fact:"Fast and playful in water, it seals its nostrils and ears to dive and hunt beneath winter ice."},
+    {key:"beaver", name:"American Beaver", img:"images/beaver.jpg",   fact:"A natural engineer — its dams flood meadows into wetlands that dozens of other species depend on."},
+    {key:"fox",    name:"Red Fox",         img:"images/fox.jpg",      zoom:1.6, focus:'50% 52%', fact:"It hunts by sound, leaping high to punch through deep snow onto voles it cannot even see."},
+    {key:"sheep",  name:"Bighorn Sheep",   img:"images/sheep.jpg",    fact:"Rams collide at 20 mph; a double layer of bone across the skull absorbs the shock of the clash."},
+    {key:"swan",   name:"Trumpeter Swan",  img:"images/swan.jpg",     fact:"North America's heaviest native waterfowl, spanning over seven feet from wingtip to wingtip."},
+    {key:"trout",  name:"Cutthroat Trout", img:"images/trout.jpg",    fact:"Named for the red slash beneath its jaw, it is a keystone meal for bears, otters, and eagles alike."},
+    {key:"hare",   name:"Snowshoe Hare",   img:"images/hare.jpg",     fact:"It molts from brown to white each winter and grows wide, furred feet that work like snowshoes."},
+    {key:"owl",    name:"Great Gray Owl",  img:"images/owl.jpg",      fact:"It can hear a vole moving under a foot of snow, then plunge through the crust to seize it."},
+    {key:"badger", name:"American Badger", img:"images/badger.jpg",   fact:"A powerful digger that sometimes teams up with a coyote to corner ground squirrels underground."},
+    {key:"chip",   name:"Uinta Chipmunk",  img:"images/chipmunk.jpg", fact:"It packs seeds into cheek pouches that can stretch nearly to the width of its own body."},
+    {key:"snake",  name:"Garter Snake",    img:"images/snake.jpg",    fact:"The park's most common reptile, often seen swimming after fish and frogs along stream edges."}
+  ];
+  static DIFF = { easy:8, medium:12, hard:16 };
+  static BURST = ["#1C7FA0","#34B0A0","#7DB23E","#E9B53D","#DD7A2E","#B0431F"];
 
-<script>
-const $ = (s,r=document)=>r.querySelector(s);
+  constructor(props){
+    super(props);
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this._first = null; this._firstRect = null; this.tick = null;
+    const diff = (props && props.defaultDifficulty) || 'easy';
+    const deck = this.buildDeck(diff);
+    this.state = {
+      diff, deck, total: Component.DIFF[diff], moves:0, matched:0, lock:false,
+      timeLabel:'0:00', best:this.loadBest(),
+      note:{empty:true, shown:false}, win:{show:false}
+    };
+  }
 
-const SVG = {
-  // IMPROVED BISON
-  bison: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Bison">
-    <path d="M25 55 Q25 78 48 82 Q75 78 75 55 Q78 42 68 38 Q55 35 45 35 Q35 35 22 38 Q18 45 25 55" fill="#3C2A1F"/>
-    <path d="M30 38 Q42 28 58 28 Q68 35 68 42" fill="#2C2118"/>
-    <ellipse cx="32" cy="48" rx="13" ry="14" fill="#3C2A1F"/>
-    <path d="M22 38 Q18 30 24 28" fill="none" stroke="#2C2118" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M42 38 Q46 30 40 28" fill="none" stroke="#2C2118" stroke-width="3.5" stroke-linecap="round"/>
-    <ellipse cx="23" cy="42" rx="3.5" ry="4.5" fill="#2C2118"/>
-    <ellipse cx="41" cy="42" rx="3.5" ry="4.5" fill="#2C2118"/>
-    <circle cx="27" cy="46" r="2.2" fill="#1a120a"/>
-    <circle cx="37" cy="46" r="2.2" fill="#1a120a"/>
-    <path d="M25 55 Q32 68 40 55" fill="#2C2118"/>
-    <rect x="32" y="75" width="7" height="18" rx="2" fill="#2C2118"/>
-    <rect x="55" y="75" width="7" height="18" rx="2" fill="#2C2118"/>
-  </svg>`,
+  componentWillUnmount(){ this.stopClock(); }
 
-  // IMPROVED BEAVER
-  beaver: `<svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Beaver">
-    <!-- Body -->
-    <ellipse cx="50" cy="52" rx="32" ry="26" fill="#8a5e36"/>
-    <!-- Head -->
-    <ellipse cx="50" cy="35" rx="18" ry="16" fill="#8a5e36"/>
-    <!-- Ears -->
-    <ellipse cx="38" cy="24" rx="5" ry="6" fill="#5a3d24"/>
-    <ellipse cx="62" cy="24" rx="5" ry="6" fill="#5a3d24"/>
-    <!-- Eyes -->
-    <circle cx="42" cy="33" r="2.8" fill="#231708"/>
-    <circle cx="58" cy="33" r="2.8" fill="#231708"/>
-    <!-- Nose -->
-    <ellipse cx="50" cy="40" rx="3.5" ry="2.5" fill="#231708"/>
-    <!-- Teeth -->
-    <rect x="46" y="42" width="3" height="6" fill="#f5edd9"/>
-    <rect x="51" y="42" width="3" height="6" fill="#f5edd9"/>
-    <!-- Tail -->
-    <path d="M82 55 Q95 60 82 72" fill="none" stroke="#5a3d24" stroke-width="12" stroke-linecap="round"/>
-    <!-- Legs -->
-    <ellipse cx="32" cy="72" rx="7" ry="5" fill="#5a3d24"/>
-    <ellipse cx="68" cy="72" rx="7" ry="5" fill="#5a3d24"/>
-  </svg>`,
+  loadBest(){
+    try { const v = JSON.parse(localStorage.getItem('yws_best')); if(v) return v; } catch(e){}
+    return { easy:null, medium:null, hard:null };
+  }
+  saveBest(best){ try { localStorage.setItem('yws_best', JSON.stringify(best)); } catch(e){} }
 
-  // IMPROVED OTTER
-  otter: `<svg viewBox="0 0 100 85" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="River Otter">
-    <!-- Body -->
-    <ellipse cx="50" cy="48" rx="28" ry="18" fill="#5c4033"/>
-    <!-- Head -->
-    <ellipse cx="72" cy="42" rx="13" ry="12" fill="#5c4033"/>
-    <!-- Ears -->
-    <ellipse cx="64" cy="33" rx="3.5" ry="4" fill="#3f2a22"/>
-    <ellipse cx="80" cy="33" rx="3.5" ry="4" fill="#3f2a22"/>
-    <!-- Eyes -->
-    <circle cx="67" cy="40" r="2.2" fill="#1c1308"/>
-    <circle cx="77" cy="40" r="2.2" fill="#1c1308"/>
-    <!-- Nose -->
-    <ellipse cx="82" cy="45" rx="3" ry="2" fill="#1c1308"/>
-    <!-- Tail -->
-    <path d="M22 48 Q12 55 18 68" fill="none" stroke="#5c4033" stroke-width="14" stroke-linecap="round"/>
-    <!-- Legs -->
-    <ellipse cx="38" cy="62" rx="5" ry="7" fill="#5c4033"/>
-    <ellipse cx="58" cy="62" rx="5" ry="7" fill="#5c4033"/>
-  </svg>`
-};
+  shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+  fmtTime(ms){ const s=Math.floor(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 
-const PAW = `<svg class="paw" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor">
-  <path d="M32 32.5 C25.5 32.5 18.6 36.6 17.6 44 C16.8 50.2 19.9 55.4 25.2 56 C28.2 56.3 30 53 32 53 C34 53 35.8 56.3 38.8 56 C44.1 55.4 47.2 50.2 46.4 44 C45.4 36.6 38.5 32.5 32 32.5 Z"/>
-  <ellipse cx="23" cy="18.5" rx="5" ry="7.1" transform="rotate(-13 23 18.5)"/>
-  <ellipse cx="41" cy="18.5" rx="5" ry="7.1" transform="rotate(13 41 18.5)"/>
-  <ellipse cx="11.5" cy="30" rx="4.6" ry="6.6" transform="rotate(-31 11.5 30)"/>
-  <ellipse cx="52.5" cy="30" rx="4.6" ry="6.6" transform="rotate(31 52.5 30)"/>
-</svg>`;
+  buildDeck(diff){
+    const pairs = Component.DIFF[diff];
+    const pick = this.shuffle(Component.ANIMALS.slice()).slice(0,pairs);
+    this._roundAnimals = pick;
+    const cards = [];
+    pick.forEach(a => {
+      cards.push({key:a.key,name:a.name,img:a.img,fact:a.fact,zoom:a.zoom,focus:a.focus,flipped:false,matched:false});
+      cards.push({key:a.key,name:a.name,img:a.img,fact:a.fact,zoom:a.zoom,focus:a.focus,flipped:false,matched:false});
+    });
+    return this.shuffle(cards);
+  }
 
-const ANIMALS = [
-  {key:"bison", name:"Bison", svg:"bison", fact:"North America's largest land animal — up to 2,000 lb, yet it can sprint at 35 mph."},
-  {key:"wolf", name:"Gray Wolf", emoji:"🐺", fact:"Returned to the park in 1995. As packs thinned the elk herds, willows recovered and rivers steadied."},
-  {key:"bear", name:"Grizzly Bear", emoji:"🐻", fact:"It can smell food from over a mile away and pack on three pounds a day before denning for winter."},
-  {key:"elk", name:"Elk", emoji:"🦌", fact:"The park's most abundant large mammal. In autumn, bull elk bugle to challenge rivals and gather harems."},
-  {key:"eagle", name:"Bald Eagle", emoji:"🦅", fact:"It builds some of the largest tree nests of any North American bird, adding to the same nest for years."},
-  {key:"otter", name:"River Otter", svg:"otter", fact:"Fast and playful in water, it seals its nostrils and ears to dive and hunt beneath winter ice."},
-  {key:"beaver", name:"American Beaver", svg:"beaver", fact:"A natural engineer — its dams flood meadows into wetlands that dozens of other species depend on."},
-  {key:"fox", name:"Red Fox", emoji:"🦊", fact:"It hunts by sound, leaping high to punch through deep snow onto voles it cannot even see."},
-  {key:"sheep", name:"Bighorn Sheep", emoji:"🐏", fact:"Rams collide at 20 mph; a double layer of bone across the skull absorbs the shock of the clash."},
-  {key:"swan", name:"Trumpeter Swan", emoji:"🦢", fact:"North America's heaviest native waterfowl, spanning over seven feet from wingtip to wingtip."},
-  {key:"trout", name:"Cutthroat Trout", emoji:"🐟", fact:"Named for the red slash beneath its jaw, it is a keystone meal for bears, otters, and eagles alike."},
-  {key:"hare", name:"Snowshoe Hare", emoji:"🐇", fact:"It molts from brown to white each winter and grows wide, furred feet that work like snowshoes."},
-  {key:"owl", name:"Great Gray Owl", emoji:"🦉", fact:"It can hear a vole moving under a foot of snow, then plunge through the crust to seize it."},
-  {key:"badger", name:"American Badger", emoji:"🦡", fact:"A powerful digger that sometimes teams up with a coyote to corner ground squirrels underground."},
-  {key:"chip", name:"Uinta Chipmunk", emoji:"🐿️", fact:"It packs seeds into cheek pouches that can stretch nearly to the width of its own body."},
-  {key:"snake", name:"Garter Snake", emoji:"🐍", fact:"The park's most common reptile, often seen swimming after fish and frogs along stream edges."}
-];
+  startClock(){ this.stopClock(); this.startedAt = Date.now(); this.tick = setInterval(()=>{ this.setState({timeLabel:this.fmtTime(Date.now()-this.startedAt)}); }, 250); }
+  stopClock(){ if(this.tick){ clearInterval(this.tick); this.tick=null; } }
 
-const DIFF = { easy:8, medium:12, hard:16 };
+  newRound(diff){
+    this.stopClock();
+    this._first = null; this._firstRect = null;
+    const d = diff || this.state.diff;
+    const deck = this.buildDeck(d);
+    this.setState({ diff:d, deck, total:Component.DIFF[d], moves:0, matched:0, lock:false, timeLabel:'0:00', note:{empty:true,shown:false}, win:{show:false} });
+  }
 
-let state = {diff:"easy",deck:[],first:null,lock:false,moves:0,matched:0,total:0,startedAt:0,tick:null,best:{easy:null,medium:null,hard:null}};
+  pick(i, e){
+    const deck = this.state.deck.slice();
+    const c = deck[i];
+    if(this.state.lock || c.flipped || c.matched) return;
+    if(!this.tick) this.startClock();
+    c.flipped = true;
+    const rect = e.currentTarget.getBoundingClientRect();
+    if(this._first == null){ this._first = i; this._firstRect = rect; this.setState({deck}); return; }
+    const ai = this._first; const a = deck[ai]; this._first = null;
+    const moves = this.state.moves + 1;
+    if(a.key === c.key){
+      a.matched = true; c.matched = true;
+      const matched = this.state.matched + 1;
+      const fr = this._firstRect;
+      this.setState({ deck, moves, matched, note:{ empty:false, shown:true, img:c.img, name:c.name, fact:c.fact } }, ()=>{
+        const cx = (fr.left+fr.right+rect.left+rect.right)/4;
+        const cy = (fr.top+fr.bottom+rect.top+rect.bottom)/4;
+        this.burstAt(cx, cy);
+      });
+      if(matched === this.state.total) setTimeout(()=>this.finish(moves), 750);
+    } else {
+      this.setState({ deck, moves, lock:true });
+      setTimeout(()=>{
+        const d2 = this.state.deck.slice();
+        d2[ai] = {...d2[ai], flipped:false};
+        d2[i]  = {...d2[i], flipped:false};
+        this.setState({ deck:d2, lock:false });
+      }, 820);
+    }
+  }
 
-function iconHTML(a){ return a.svg ? SVG[a.svg] : `<span>${a.emoji}</span>`; }
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
-function fmtTime(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
+  rankFor(moves, pairs){
+    const r = moves / pairs;
+    if(r <= 1.25) return "Chief Naturalist";
+    if(r <= 1.6)  return "Senior Ranger";
+    if(r <= 2.1)  return "Field Ranger";
+    return "Junior Ranger";
+  }
 
-function startClock(){ stopClock(); state.startedAt=Date.now(); state.tick=setInterval(()=>{ $("#sTime").textContent=fmtTime(Date.now()-state.startedAt); },250); }
-function stopClock(){ if(state.tick){clearInterval(state.tick);state.tick=null;} }
+  finish(moves){
+    this.stopClock();
+    const total = this.state.total;
+    const best = {...this.state.best};
+    if(best[this.state.diff] == null || moves < best[this.state.diff]){ best[this.state.diff] = moves; this.saveBest(best); }
+    const guide = (this._roundAnimals||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>({img:a.img,name:a.name,fact:a.fact}));
+    this.setState({
+      best,
+      win:{ show:true, rank:this.rankFor(moves,total), runLine:`${total} pairs · ${moves} moves · ${this.state.timeLabel}`, guide, onAgain:()=>this.newRound() }
+    });
+  }
 
-function setBestDisplay(){ const b=state.best[state.diff]; $("#sBest").textContent = b==null ? "—" : b; }
+  burstAt(x, y){
+    const layer = this._fx; if(!layer || this.reduced) return;
+    const ring = document.createElement('div');
+    ring.className = 'fx-ring'; ring.style.left = x+'px'; ring.style.top = y+'px';
+    layer.appendChild(ring); setTimeout(()=>ring.remove(), 1700);
+    const N = 18;
+    for(let k=0;k<N;k++){
+      const s = document.createElement('div');
+      s.className = 'spark';
+      const ang = Math.random()*Math.PI*2;
+      const dist = 40 + Math.random()*70;
+      const x1 = Math.cos(ang)*dist, y1 = Math.sin(ang)*dist;
+      const x2 = x1*1.7, y2 = y1*1.7 + 120 + Math.random()*90;
+      s.style.left = x+'px'; s.style.top = y+'px';
+      s.style.background = Component.BURST[k % Component.BURST.length];
+      s.style.setProperty('--x', x1+'px');
+      s.style.setProperty('--y1', y1+'px');
+      s.style.setProperty('--x2', x2+'px');
+      s.style.setProperty('--y2', y2+'px');
+      s.style.setProperty('--rot', (Math.random()*720-360)+'deg');
+      s.style.setProperty('--dur', (2200 + Math.random()*1200)+'ms');
+      layer.appendChild(s); setTimeout(()=>s.remove(), 3600);
+    }
+  }
 
-function newRound(){
-  stopClock(); state.first=null; state.lock=false; state.moves=0; state.matched=0;
-  const pairs=DIFF[state.diff]; state.total=pairs;
-  const pick=shuffle(ANIMALS.slice()).slice(0,pairs);
-  const cards=[]; pick.forEach(a=>{ cards.push({a}); cards.push({a}); });
-  state.deck=shuffle(cards);
+  segStyle(active){
+    return { appearance:'none', border:0, cursor:'pointer', color:active?'var(--steam)':'var(--steam-dim)', fontFamily:"'Space Mono',monospace", fontSize:'.78rem', letterSpacing:'.06em', textTransform:'uppercase', padding:'7px 13px', borderRadius:'8px', background:active?'linear-gradient(180deg,#27513C,var(--panel))':'transparent', boxShadow:active?'inset 0 0 0 1px rgba(233,181,61,.4)':'none', transition:'background .15s, color .15s' };
+  }
 
-  $("#sMoves").textContent="0"; $("#sTime").textContent="0:00"; $("#sPairs").textContent=`0/${pairs}`; setBestDisplay();
-
-  $("#noteBody").hidden=true; $("#noteEmpty").hidden=false;
-  const note = $("#note"); note.classList.remove("show"); void note.offsetWidth; note.classList.add("show");
-
-  const board=$("#board"); board.innerHTML="";
-  state.deck.forEach((c,i)=>{
-    const btn=document.createElement("button");
-    btn.type="button"; btn.className="card"; btn.setAttribute("aria-label","Card, face down");
-    btn.innerHTML=`<div class="inner"><div class="face back">${PAW}</div><div class="face front"><div class="spec">${iconHTML(c.a)}</div><div class="nm">${c.a.name}</div></div></div>`;
-    btn.addEventListener("click",()=>onPick(i,btn));
-    c.el=btn; c.flipped=false; c.matched=false;
-    board.appendChild(btn);
-  });
-}
-
-function onPick(i,btn){
-  const c=state.deck[i];
-  if(state.lock||c.flipped||c.matched) return;
-  if(state.matched===0 && !state.first && !state.tick) startClock();
-  flip(c,true);
-  if(!state.first){ state.first=c; return; }
-  state.moves++; $("#sMoves").textContent=state.moves;
-  const a=state.first; state.first=null;
-  if(a.a.key===c.a.key){
-    a.matched=c.matched=true;
-    a.el.classList.add("matched"); c.el.classList.add("matched");
-    state.matched++; $("#sPairs").textContent=`${state.matched}/${state.total}`;
-    burstBetween(a.el,c.el); showNote(c.a);
-    if(state.matched===state.total) finish();
-  } else {
-    state.lock=true;
-    setTimeout(()=>{ flip(a,false); flip(c,false); state.lock=false; },820);
+  renderVals(){
+    const s = this.state;
+    const back = this.props.cardBack || '#1C7FA0';
+    const cards = s.deck.map((c,i)=>{
+      const flipped = c.flipped || c.matched;
+      return {
+      name:c.name, img:c.img,
+      imgStyle:{ width:'100%', height:'100%', objectFit:'cover', display:'block', transform:`scale(${c.zoom||1})`, transformOrigin: c.focus || '50% 50%' },
+      aria: flipped ? c.name : 'Card, face down',
+      onClick:(e)=>this.pick(i,e),
+      backStyle:{ position:'absolute', inset:0, borderRadius:'11px', display: flipped?'none':'flex', alignItems:'center', justifyContent:'center', background:`linear-gradient(160deg, ${back}, var(--spring-teal))`, boxShadow:'inset 0 0 0 2px rgba(14,26,24,.35), inset 0 0 26px rgba(0,0,0,.28)' },
+      frontStyle:{ position:'absolute', inset:0, borderRadius:'11px', overflow:'hidden', background:'#0E1A18', display: flipped?'block':'none' },
+      innerStyle:{ position:'relative', width:'100%', height:'100%', borderRadius:'11px' },
+      ringStyle: c.matched
+        ? { position:'absolute', inset:0, borderRadius:'11px', boxShadow:'inset 0 0 0 3px var(--mat-gold)', pointerEvents:'none', animation:'pop .4s ease' }
+        : { display:'none' }
+      };
+    });
+    const bestVal = s.best[s.diff];
+    return {
+      cards,
+      moves: s.moves,
+      timeLabel: s.timeLabel,
+      pairsLabel: `${s.matched}/${s.total}`,
+      bestLabel: bestVal == null ? '—' : String(bestVal),
+      isEasy: s.diff==='easy', isMedium: s.diff==='medium', isHard: s.diff==='hard',
+      easyStyle: this.segStyle(s.diff==='easy'),
+      medStyle: this.segStyle(s.diff==='medium'),
+      hardStyle: this.segStyle(s.diff==='hard'),
+      setEasy: ()=>this.newRound('easy'),
+      setMedium: ()=>this.newRound('medium'),
+      setHard: ()=>this.newRound('hard'),
+      onNewRound: ()=>this.newRound(),
+      note: s.note,
+      win: s.win,
+      fxRef: (el)=>{ this._fx = el; }
+    };
   }
 }
-
-function flip(c,on){ c.flipped=on; c.el.classList.toggle("flipped",on); }
-
-function showNote(a){
-  $("#noteEmpty").hidden=true; $("#noteBody").hidden=false;
-  $("#noteIc").innerHTML=iconHTML(a); $("#noteName").textContent=a.name; $("#noteFact").textContent=a.fact;
-  const n=$("#note"); n.classList.remove("show"); void n.offsetWidth; n.classList.add("show");
-}
-
-const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-function burstBetween(el1,el2){ if(REDUCED) return; /* burst animation code */ }
-
-function finish(){ /* win screen code */ }
-
-document.querySelectorAll('.seg button').forEach(b=>{ b.addEventListener("click",()=>{ document.querySelectorAll('.seg button').forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); state.diff=b.dataset.diff; newRound(); }); });
-
-$("#newRound").addEventListener("click",newRound);
-$("#again").addEventListener("click",()=>{ $("#overlay").classList.remove("show"); newRound(); });
-
-newRound();
 </script>
 </body>
 </html>
