@@ -9,16 +9,125 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  /* Your full CSS from before — unchanged */
-  :root{ ... } /* (keep all your :root and styles exactly as you have them) */
+  :root{
+    --obsidian:#0E1A18;
+    --obsidian-2:#13241F;
+    --panel:#16302A;
+    --panel-2:#1B3A32;
+    --spring-blue:#1C7FA0;
+    --spring-teal:#34B0A0;
+    --mat-green:#7DB23E;
+    --mat-gold:#E9B53D;
+    --mat-orange:#DD7A2E;
+    --mat-rust:#B0431F;
+    --steam:#F2ECDD;
+    --steam-dim:#AEB8AE;
+    --line:#2C5044;
+    --card-cream:#f5edd9;
+    --card-cream2:#e4d6b4;
+    --ink:#2a2114;
+    --ink-soft:#5a4a31;
+    --r:14px;
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background: radial-gradient(1200px 700px at 70% -10%, rgba(52,176,160,.10), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(221,122,46,.08), transparent 55%), var(--obsidian);
+    color:var(--steam);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:22px 18px 64px}
+
+  .back-link {
+    color: var(--steam-dim);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    letter-spacing: .06em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0 8px;
+  }
+  .back-link:hover { color: var(--steam); }
+
+  header.hud{display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);}
+  .badge{flex:none;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 22%,var(--spring-teal) 22% 40%,var(--mat-green) 40% 58%,var(--mat-gold) 58% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15), 0 4px 12px -4px rgba(0,0,0,.6);}
+  .titles h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.34rem;line-height:1.05;margin:0;letter-spacing:.2px;}
+  .titles p{margin:3px 0 0;font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 12px;}
+  .seg{display:inline-flex;gap:4px;padding:4px;border-radius:11px;background:var(--obsidian-2);border:1px solid var(--line);}
+  .seg button{appearance:none;border:0;cursor:pointer;color:var(--steam-dim);font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:7px 13px;border-radius:8px;background:transparent;transition:background .15s,color .15s;}
+  .seg button[aria-pressed="true"]{background:linear-gradient(180deg,#27513C,var(--panel));color:var(--steam);box-shadow:inset 0 0 0 1px rgba(233,181,61,.4);}
+  .spacer{flex:1 1 auto}
+  .ghost{appearance:none;cursor:pointer;color:var(--steam);font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:9px 15px;border-radius:10px;background:var(--panel);border:1px solid var(--line);transition:border-color .15s;}
+  .ghost:hover{border-color:var(--mat-gold)}
+
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+  .stat{flex:1 1 0;min-width:96px;background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;}
+  .stat .k{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);}
+  .stat .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;line-height:1.1;margin-top:2px;}
+
+  .board{display:grid;gap:11px;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
+  @media(max-width:430px){.board{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}}
+  .card{appearance:none;border:0;background:transparent;padding:0;cursor:pointer;aspect-ratio:3/4;perspective:800px;border-radius:11px;}
+  .card:focus-visible{outline:2px solid var(--mat-gold);outline-offset:3px;border-radius:12px}
+  .card .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.7,.2,1);border-radius:11px;}
+  .card.flipped .inner,.card.matched .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:11px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .back{background:linear-gradient(160deg,var(--spring-blue),var(--spring-teal));box-shadow:inset 0 0 0 2px rgba(14,26,24,.35), inset 0 0 26px rgba(0,0,0,.28);}
+  .back .paw{width:54%;height:54%;color:var(--mat-gold);filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));}
+  .front{transform:rotateY(180deg);background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));box-shadow:inset 0 0 0 2px rgba(176,67,31,.25), inset 0 0 0 5px rgba(245,237,217,.6);flex-direction:column;gap:5px;padding:8px 6px;}
+  .front .spec{height:48%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;line-height:1;color:var(--ink);}
+  .front .spec svg{height:1.4em;width:auto;display:block}
+  .front .nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.74rem;line-height:1.05;text-align:center;color:var(--ink);padding:0 2px;}
+  @media(max-width:430px){.front .spec{font-size:2rem}.front .nm{font-size:.64rem}}
+  .card.matched{cursor:default}
+  .card.matched .front{box-shadow:inset 0 0 0 2px var(--mat-gold), inset 0 0 0 5px rgba(245,237,217,.6);animation:pop .4s ease;}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+  .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:35;overflow:hidden}
+  .spark{position:fixed;width:10px;height:10px;border-radius:2px;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.25);animation:burst var(--dur,3000ms) linear forwards;}
+  @keyframes burst{0%{transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35);opacity:0}6%{opacity:1}24%{transform:translate(-50%,-50%) translate(var(--x),var(--y1)) rotate(calc(var(--rot)*.35)) scale(1);opacity:1}82%{opacity:1}100%{transform:translate(-50%,-50%) translate(var(--x2),var(--y2)) rotate(var(--rot)) scale(.85);opacity:0}}
+  .fx-ring{position:fixed;width:22px;height:22px;border-radius:50%;border:3px solid var(--mat-gold);transform:translate(-50%,-50%);animation:ring 1700ms ease-out forwards;}
+  @keyframes ring{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}55%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) scale(3.6)}}
+
+  .fieldnote{margin-top:20px;border-radius:16px;background:linear-gradient(165deg,var(--card-cream),var(--card-cream2));border:1px solid rgba(176,67,31,.3);box-shadow:var(--shadow), inset 0 0 0 4px rgba(245,237,217,.55);padding:22px 24px;color:var(--ink);opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;min-height:118px;}
+  .fieldnote.show{opacity:1;transform:none}
+  .fieldnote .eyebrow{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mat-rust);margin-bottom:4px;}
+  .fieldnote .who{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .fieldnote .who .ic{font-size:2rem;line-height:1}
+  .fieldnote .who h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5rem;line-height:1.05;margin:0;color:var(--ink);}
+  .fieldnote .fact{font-size:1.2rem;line-height:1.62;color:var(--ink);max-width:60ch;}
+  .fieldnote .empty{font-size:1.05rem;line-height:1.6;color:var(--ink-soft);font-style:italic;}
+  @media(max-width:430px){.fieldnote{padding:18px 18px}.fieldnote .who h2{font-size:1.3rem}.fieldnote .fact{font-size:1.12rem;line-height:1.58}}
+
+  .overlay{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto;z-index:40;background:rgba(8,16,14,.72);backdrop-filter:blur(3px);}
+  .overlay.show{display:flex}
+  .sheet{width:100%;max-width:680px;margin:auto 0;background:linear-gradient(180deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:26px 26px 28px;}
+  .crest{width:74px;height:74px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 50% 50%,var(--spring-blue) 0 20%,var(--spring-teal) 20% 38%,var(--mat-green) 38% 56%,var(--mat-gold) 56% 74%,var(--mat-orange) 74% 88%,var(--mat-rust) 88% 100%);}
+  .sheet h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-align:center;font-size:1.8rem;margin:0;line-height:1.05;}
+  .rank{text-align:center;font-family:'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--mat-gold);font-size:.84rem;margin:6px 0 2px;}
+  .runline{text-align:center;color:var(--steam-dim);font-size:.92rem;margin:0 0 18px;}
+  .guide-title{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--steam-dim);margin:0 0 10px;}
+  .guide{display:flex;flex-direction:column;gap:10px}
+  .entry{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));border-radius:13px;padding:14px 16px;color:var(--ink);box-shadow:inset 0 0 0 3px rgba(245,237,217,.5);}
+  .entry .ic{flex:none;font-size:1.9rem;line-height:1;width:40px;text-align:center}
+  .entry .tx h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.12rem;line-height:1.1;margin:0 0 3px;color:var(--ink);}
+  .entry .tx p{margin:0;font-size:1.04rem;line-height:1.55;color:var(--ink);}
+  @media(max-width:430px){.entry .tx p{font-size:1rem}}
+  .winfoot{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  .primary{appearance:none;border:0;cursor:pointer;font-family:'Space Mono',monospace;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 22px;border-radius:11px;color:var(--obsidian);background:linear-gradient(180deg,var(--mat-gold),var(--mat-orange));box-shadow:0 8px 20px -8px rgba(221,122,46,.7);}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- Back to main site -->
-  <a href="https://parkadventureseries.com/" style="color:#AEB8AE; text-decoration:none; font-family:'Space Mono',monospace; font-size:0.9rem; display:inline-flex; align-items:center; gap:6px; margin:12px 0 8px;">
-    ← Back to Park Adventure Series
-  </a>
+  <a href="https://parkadventureseries.com/" class="back-link">← Back to Park Adventure Series</a>
 
   <header class="hud">
     <div class="badge" aria-hidden="true"></div>
@@ -28,13 +137,55 @@
     </div>
   </header>
 
-  <!-- Rest of your HTML body (toolbar, stats, board, fieldnote, overlay, etc.) remains exactly the same -->
-  ... (keep everything from your original code) ...
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Difficulty">
+      <button type="button" data-diff="easy" aria-pressed="true">Easy</button>
+      <button type="button" data-diff="medium" aria-pressed="false">Medium</button>
+      <button type="button" data-diff="hard" aria-pressed="false">Hard</button>
+    </div>
+    <span class="spacer"></span>
+    <button type="button" class="ghost" id="newRound">New round</button>
+  </div>
 
+  <div class="stats">
+    <div class="stat"><div class="k">Moves</div><div class="v" id="sMoves">0</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="sTime">0:00</div></div>
+    <div class="stat"><div class="k">Pairs</div><div class="v" id="sPairs">0/8</div></div>
+    <div class="stat"><div class="k">Best moves</div><div class="v" id="sBest">—</div></div>
+  </div>
+
+  <div class="board" id="board" aria-label="Matching board"></div>
+
+  <div class="fieldnote" id="note" aria-live="polite">
+    <div class="empty" id="noteEmpty">Match a pair to add a Yellowstone field note here.</div>
+    <div id="noteBody" hidden>
+      <div class="eyebrow">Field note</div>
+      <div class="who"><span class="ic" id="noteIc"></span><h2 id="noteName"></h2></div>
+      <div class="fact" id="noteFact"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="sheet">
+    <div class="crest" aria-hidden="true"></div>
+    <h2 id="winTitle">Expedition complete</h2>
+    <div class="rank" id="winRank">Field Ranger</div>
+    <p class="runline" id="winRun"></p>
+    <p class="guide-title">Field guide — what you logged</p>
+    <div class="guide" id="guide"></div>
+    <div class="winfoot">
+      <button type="button" class="primary" id="again">Play again</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* Your full script — it's already complete in the version you sent */
-</script>
-</body>
-</html>
+const $ = (s,r=document)=>r.querySelector(s);
+
+const SVG = {
+  bison:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bison">
+    <g fill="#33261a"><path d="M41 30 C29 26 18 24 8 15 C12 24 16 32 24 39 C31 43 38 42 41 39 C42 36 42 33 41 30 Z"/><path d="M59 30 C71 26 82 24 92 15 C88 24 84 32 76 39 C69 43 62 42 59 39 C58 36 58 33 59 30 Z"/><path d="M30 36 C30 26 40 21 50 21 C60 21 70 26 70 36 C75 42 75 52 70 60 C66 72 58 82 50 86 C42 82 34 72 30 60 C25 52 25 42 30 36 Z"/><path d="M29 37 L32 23 L37 33 L42 21 L47 31 L50 19 L53 31 L58 21 L63 33 L68 23 L71 37 C61 31 55 30 50 30 C45 30 39 31 29 37 Z"/><path d="M30 50 L21 52 L30 57 Z"/><path d="M30 60 L22 65 L31 67 Z"/><path d="M70 50 L79 52 L70 57 Z"/><path d="M70 60 L78 65 L69 67 Z"/><path d="M37 72 L40 89 L43 76 L47 94 L50 79 L53 94 L57 76 L60 89 L63 72 C57 78 43 78 37 72 Z"/></g>
+    <g fill="#f5edd9"><path d="M34 45 C39 45 43 47 45 50 C42 51 37 51 34 49 C32.5 47.5 32.5 46 34 45 Z"/><path d="M66 45 C61 45 57 47 55 50 C58 51 63 51 66 49 C67.5 47.5 67.5 46 66 45 Z"/></g>
+    <ellipse cx="39" cy="48" rx="2.4" ry="1.8" transform="rotate(-12 39 48)" fill="#1a120a"/>
+    <ellipse cx="61" cy="48" rx="2.4" ry="1.8" transform
