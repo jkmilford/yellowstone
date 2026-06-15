@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yellowstone Wildlife — Field Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --obsidian:#0E1A18;
+    --obsidian-2:#13241F;
+    --panel:#16302A;
+    --panel-2:#1B3A32;
+    --spring-blue:#1C7FA0;
+    --spring-teal:#34B0A0;
+    --mat-green:#7DB23E;
+    --mat-gold:#E9B53D;
+    --mat-orange:#DD7A2E;
+    --mat-rust:#B0431F;
+    --steam:#F2ECDD;
+    --steam-dim:#AEB8AE;
+    --line:#2C5044;
+    --good:#5FC07A;
+    --bad:#E06A4E;
+    --card-cream:#f5edd9;
+    --card-cream2:#e4d6b4;
+    --ink:#2a2114;
+    --ink-soft:#5a4a31;
+    --r:14px;
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 70% -10%, rgba(52,176,160,.10), transparent 60%),
+      radial-gradient(900px 600px at 10% 110%, rgba(221,122,46,.08), transparent 55%),
+      var(--obsidian);
+    color:var(--steam);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:22px 18px 64px}
+
+  /* ---------- Header ---------- */
+  header.hud{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 18px;
+    background:linear-gradient(180deg,var(--panel),var(--obsidian-2));
+    border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+  }
+  .badge{
+    flex:none;width:46px;height:46px;border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%,
+        var(--spring-blue) 0 22%, var(--spring-teal) 22% 40%,
+        var(--mat-green) 40% 58%, var(--mat-gold) 58% 74%,
+        var(--mat-orange) 74% 88%, var(--mat-rust) 88% 100%);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.15), 0 4px 12px -4px rgba(0,0,0,.6);
+  }
+  .titles{min-width:0}
+  .titles h1{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+    font-size:1.34rem;line-height:1.05;margin:0;letter-spacing:.2px;
+  }
+  .titles p{
+    margin:3px 0 0;font-family:'Space Mono',monospace;font-size:.74rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--steam-dim);
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    margin:16px 0 12px;
+  }
+  .seg{
+    display:inline-flex;gap:4px;padding:4px;border-radius:11px;
+    background:var(--obsidian-2);border:1px solid var(--line);
+  }
+  .seg button{
+    appearance:none;border:0;cursor:pointer;color:var(--steam-dim);
+    font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:7px 13px;border-radius:8px;background:transparent;
+    transition:background .15s,color .15s;
+  }
+  .seg button[aria-pressed="true"]{
+    background:linear-gradient(180deg,var(--forest-lite,#27513C),var(--panel));
+    color:var(--steam);box-shadow:inset 0 0 0 1px rgba(233,181,61,.4);
+  }
+  .seg button:focus-visible{outline:2px solid var(--mat-gold);outline-offset:2px}
+  .spacer{flex:1 1 auto}
+  .ghost{
+    appearance:none;cursor:pointer;color:var(--steam);
+    font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:9px 15px;border-radius:10px;
+    background:var(--panel);border:1px solid var(--line);transition:border-color .15s;
+  }
+  .ghost:hover{border-color:var(--mat-gold)}
+  .ghost:focus-visible{outline:2px solid var(--mat-gold);outline-offset:2px}
+
+  /* ---------- Stats ---------- */
+  .stats{
+    display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;
+  }
+  .stat{
+    flex:1 1 0;min-width:96px;
+    background:var(--obsidian-2);border:1px solid var(--line);border-radius:12px;
+    padding:10px 13px;
+  }
+  .stat .k{
+    font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--steam-dim);
+  }
+  .stat .v{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.4rem;
+    line-height:1.1;margin-top:2px;
+  }
+
+  /* ---------- Board ---------- */
+  .board{
+    display:grid;gap:11px;
+    grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  }
+  @media(max-width:430px){
+    .board{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
+  }
+  .card{
+    appearance:none;border:0;background:transparent;padding:0;cursor:pointer;
+    aspect-ratio:3/4;perspective:800px;border-radius:11px;
+  }
+  .card:focus-visible{outline:2px solid var(--mat-gold);outline-offset:3px;border-radius:12px}
+  .card .inner{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.7,.2,1);
+    border-radius:11px;
+  }
+  .card.flipped .inner,.card.matched .inner{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:11px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  /* back (face-down) */
+  .back{
+    background:linear-gradient(160deg,var(--spring-blue),var(--spring-teal));
+    box-shadow:inset 0 0 0 2px rgba(14,26,24,.35), inset 0 0 26px rgba(0,0,0,.28);
+  }
+  .back .paw{
+    width:54%;height:54%;opacity:1;color:var(--mat-gold);
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));
+  }
+  /* front (specimen) */
+  .front{
+    transform:rotateY(180deg);
+    background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));
+    box-shadow:inset 0 0 0 2px rgba(176,67,31,.25), inset 0 0 0 5px rgba(245,237,217,.6);
+    flex-direction:column;gap:5px;padding:8px 6px;
+  }
+  .front .spec{
+    height:48%;display:flex;align-items:center;justify-content:center;
+    font-size:2.4rem;line-height:1;color:var(--ink);
+  }
+  .front .spec svg{height:1.4em;width:auto;display:block}
+  .front .nm{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:700;
+    font-size:.74rem;line-height:1.05;text-align:center;color:var(--ink);
+    padding:0 2px;
+  }
+  @media(max-width:430px){
+    .front .spec{font-size:2rem}
+    .front .nm{font-size:.64rem}
+  }
+  .card.matched{cursor:default}
+  .card.matched .front{
+    box-shadow:inset 0 0 0 2px var(--mat-gold), inset 0 0 0 5px rgba(245,237,217,.6);
+    animation:pop .4s ease;
+  }
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+  /* match burst */
+  .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:35;overflow:hidden}
+  .spark{
+    position:fixed;width:10px;height:10px;border-radius:2px;
+    transform:translate(-50%,-50%);
+    box-shadow:0 1px 3px rgba(0,0,0,.25);
+    animation:burst var(--dur,3000ms) linear forwards;
+  }
+  @keyframes burst{
+    0%{transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35);opacity:0}
+    6%{opacity:1}
+    /* explode outward to the radial point */
+    24%{transform:translate(-50%,-50%) translate(var(--x),var(--y1)) rotate(calc(var(--rot) * .35)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.4,0,.75,1)}
+    /* then fall under gravity while tumbling, staying visible */
+    82%{opacity:1}
+    100%{transform:translate(-50%,-50%) translate(var(--x2),var(--y2)) rotate(var(--rot)) scale(.85);opacity:0}
+  }
+  .fx-ring{
+    position:fixed;width:22px;height:22px;border-radius:50%;
+    border:3px solid var(--mat-gold);transform:translate(-50%,-50%);
+    animation:ring 1700ms ease-out forwards;
+  }
+  @keyframes ring{
+    0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}
+    55%{opacity:.5}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(3.6)}
+  }
+
+  /* ---------- Field note (the fact box) ---------- */
+  .fieldnote{
+    margin-top:20px;border-radius:16px;
+    background:linear-gradient(165deg,var(--card-cream),var(--card-cream2));
+    border:1px solid rgba(176,67,31,.3);
+    box-shadow:var(--shadow), inset 0 0 0 4px rgba(245,237,217,.55);
+    padding:22px 24px;
+    color:var(--ink);
+    opacity:0;transform:translateY(8px);
+    transition:opacity .35s,transform .35s;
+    min-height:118px;
+  }
+  .fieldnote.show{opacity:1;transform:none}
+  .fieldnote .eyebrow{
+    font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--mat-rust);margin-bottom:4px;
+  }
+  .fieldnote .who{
+    display:flex;align-items:center;gap:12px;margin-bottom:10px;
+  }
+  .fieldnote .who .ic{font-size:2rem;line-height:1}
+  .fieldnote .who .ic svg{height:1.5em;width:auto;display:block}
+  .fieldnote .who h2{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+    font-size:1.5rem;line-height:1.05;margin:0;color:var(--ink);
+  }
+  .fieldnote .fact{
+    font-size:1.2rem;          /* ~19px — enlarged for easy reading */
+    line-height:1.62;
+    color:var(--ink);
+    max-width:60ch;
+  }
+  .fieldnote .empty{
+    font-size:1.05rem;line-height:1.6;color:var(--ink-soft);font-style:italic;
+  }
+  @media(max-width:430px){
+    .fieldnote{padding:18px 18px}
+    .fieldnote .who h2{font-size:1.3rem}
+    .fieldnote .fact{font-size:1.12rem;line-height:1.58}
+  }
+
+  /* ---------- Win overlay ---------- */
+  .overlay{
+    position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;
+    padding:28px 16px;overflow:auto;z-index:40;
+    background:rgba(8,16,14,.72);backdrop-filter:blur(3px);
+  }
+  .overlay.show{display:flex}
+  .sheet{
+    width:100%;max-width:680px;margin:auto 0;
+    background:linear-gradient(180deg,var(--panel),var(--obsidian-2));
+    border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);
+    padding:26px 26px 28px;
+  }
+  .crest{
+    width:74px;height:74px;border-radius:50%;margin:0 auto 12px;
+    background:
+      radial-gradient(circle at 50% 50%,
+        var(--spring-blue) 0 20%, var(--spring-teal) 20% 38%,
+        var(--mat-green) 38% 56%, var(--mat-gold) 56% 74%,
+        var(--mat-orange) 74% 88%, var(--mat-rust) 88% 100%);
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.16), 0 6px 18px -6px rgba(0,0,0,.7);
+  }
+  .sheet h2{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;text-align:center;
+    font-size:1.8rem;margin:0;line-height:1.05;
+  }
+  .rank{
+    text-align:center;font-family:'Space Mono',monospace;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--mat-gold);font-size:.84rem;margin:6px 0 2px;
+  }
+  .runline{
+    text-align:center;color:var(--steam-dim);font-size:.92rem;margin:0 0 18px;
+  }
+  .guide-title{
+    font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--steam-dim);margin:0 0 10px;
+  }
+  .guide{display:flex;flex-direction:column;gap:10px}
+  .entry{
+    display:flex;gap:14px;align-items:flex-start;
+    background:linear-gradient(160deg,var(--card-cream),var(--card-cream2));
+    border-radius:13px;padding:14px 16px;color:var(--ink);
+    box-shadow:inset 0 0 0 3px rgba(245,237,217,.5);
+  }
+  .entry .ic{flex:none;font-size:1.9rem;line-height:1;width:40px;text-align:center}
+  .entry .ic svg{height:1.4em;width:auto;display:inline-block}
+  .entry .tx h3{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+    font-size:1.12rem;line-height:1.1;margin:0 0 3px;color:var(--ink);
+  }
+  .entry .tx p{
+    margin:0;font-size:1.04rem;        /* ~16.5px — enlarged win-screen facts */
+    line-height:1.55;color:var(--ink);
+  }
+  @media(max-width:430px){
+    .entry .tx p{font-size:1rem}
+  }
+  .winfoot{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  .primary{
+    appearance:none;border:0;cursor:pointer;
+    font-family:'Space Mono',monospace;font-size:.82rem;letter-spacing:.08em;
+    text-transform:uppercase;padding:12px 22px;border-radius:11px;color:var(--obsidian);
+    background:linear-gradient(180deg,var(--mat-gold),var(--mat-orange));
+    box-shadow:0 8px 20px -8px rgba(221,122,46,.7);
+  }
+  .primary:focus-visible{outline:2px solid var(--steam);outline-offset:2px}
+
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+  @media(prefers-reduced-motion:reduce){
+    .card .inner{transition:none}
+    .fieldnote{transition:none}
+    .card.matched .front{animation:none}
+    .spark,.fx-ring{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hud">
+    <div class="badge" aria-hidden="true"></div>
+    <div class="titles">
+      <h1>Yellowstone Wildlife — Field Match</h1>
+      <p>Flip the rings · match the pair · log the fact</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Difficulty">
+      <button type="button" data-diff="easy" aria-pressed="true">Easy</button>
+      <button type="button" data-diff="medium" aria-pressed="false">Medium</button>
+      <button type="button" data-diff="hard" aria-pressed="false">Hard</button>
+    </div>
+    <span class="spacer"></span>
+    <button type="button" class="ghost" id="newRound">New round</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Moves</div><div class="v" id="sMoves">0</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="sTime">0:00</div></div>
+    <div class="stat"><div class="k">Pairs</div><div class="v" id="sPairs">0/8</div></div>
+    <div class="stat"><div class="k">Best moves</div><div class="v" id="sBest">—</div></div>
+  </div>
+
+  <div class="board" id="board" aria-label="Matching board"></div>
+
+  <div class="fieldnote" id="note" aria-live="polite">
+    <div class="empty" id="noteEmpty">Match a pair to add a Yellowstone field note here.</div>
+    <div id="noteBody" hidden>
+      <div class="eyebrow">Field note</div>
+      <div class="who"><span class="ic" id="noteIc"></span><h2 id="noteName"></h2></div>
+      <div class="fact" id="noteFact"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="sheet">
+    <div class="crest" aria-hidden="true"></div>
+    <h2 id="winTitle">Expedition complete</h2>
+    <div class="rank" id="winRank">Field Ranger</div>
+    <p class="runline" id="winRun"></p>
+    <p class="guide-title">Field guide — what you logged</p>
+    <div class="guide" id="guide"></div>
+    <div class="winfoot">
+      <button type="button" class="primary" id="again">Play again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Yellowstone Wildlife — Field Match
+   Single-file memory game. Original facts from public knowledge.
+   ============================================================ */
+
+const $ = (s,r=document)=>r.querySelector(s);
+
+/* Inline SVGs for animals whose emoji don't render reliably,
+   drawn as simple front-on portraits. */
+const SVG = {
+  bison:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bison">
+    <g fill="#33261a">
+      <path d="M41 30 C29 26 18 24 8 15 C12 24 16 32 24 39 C31 43 38 42 41 39 C42 36 42 33 41 30 Z"/>
+      <path d="M59 30 C71 26 82 24 92 15 C88 24 84 32 76 39 C69 43 62 42 59 39 C58 36 58 33 59 30 Z"/>
+      <path d="M30 36 C30 26 40 21 50 21 C60 21 70 26 70 36 C75 42 75 52 70 60 C66 72 58 82 50 86 C42 82 34 72 30 60 C25 52 25 42 30 36 Z"/>
+      <path d="M29 37 L32 23 L37 33 L42 21 L47 31 L50 19 L53 31 L58 21 L63 33 L68 23 L71 37 C61 31 55 30 50 30 C45 30 39 31 29 37 Z"/>
+      <path d="M30 50 L21 52 L30 57 Z"/>
+      <path d="M30 60 L22 65 L31 67 Z"/>
+      <path d="M70 50 L79 52 L70 57 Z"/>
+      <path d="M70 60 L78 65 L69 67 Z"/>
+      <path d="M37 72 L40 89 L43 76 L47 94 L50 79 L53 94 L57 76 L60 89 L63 72 C57 78 43 78 37 72 Z"/>
+    </g>
+    <g fill="#f5edd9">
+      <path d="M34 45 C39 45 43 47 45 50 C42 51 37 51 34 49 C32.5 47.5 32.5 46 34 45 Z"/>
+      <path d="M66 45 C61 45 57 47 55 50 C58 51 63 51 66 49 C67.5 47.5 67.5 46 66 45 Z"/>
+    </g>
+    <ellipse cx="39" cy="48" rx="2.4" ry="1.8" transform="rotate(-12 39 48)" fill="#1a120a"/>
+    <ellipse cx="61" cy="48" rx="2.4" ry="1.8" transform="rotate(12 61 48)" fill="#1a120a"/>
+    <path d="M42 60 C37 60 36 67 41 68 C44 69 46 67 50 67 C54 67 56 69 59 68 C64 67 63 60 58 60 C54 60 53 63 50 63 C47 63 46 60 42 60 Z" fill="#d8c8a4"/>
+    <ellipse cx="44.5" cy="65" rx="1.8" ry="2.4" transform="rotate(-15 44.5 65)" fill="#1a120a"/>
+    <ellipse cx="55.5" cy="65" rx="1.8" ry="2.4" transform="rotate(15 55.5 65)" fill="#1a120a"/>
+  </svg>`,
+  beaver:`<svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Beaver">
+    <ellipse cx="24" cy="30" rx="9" ry="9" fill="#5a3d24"/>
+    <ellipse cx="76" cy="30" rx="9" ry="9" fill="#5a3d24"/>
+    <ellipse cx="50" cy="48" rx="32" ry="30" fill="#8a5e36"/>
+    <ellipse cx="50" cy="58" rx="20" ry="17" fill="#b88a52"/>
+    <circle cx="38" cy="42" r="3" fill="#231708"/>
+    <circle cx="62" cy="42" r="3" fill="#231708"/>
+    <ellipse cx="50" cy="56" rx="6" ry="4.5" fill="#3a2410"/>
+    <rect x="45" y="60" width="4.4" height="11" rx="1.4" fill="#fbf3da"/>
+    <rect x="50.6" y="60" width="4.4" height="11" rx="1.4" fill="#fbf3da"/>
+    <line x1="22" y1="56" x2="40" y2="58" stroke="#3a2410" stroke-width="1.1"/>
+    <line x1="60" y1="58" x2="78" y2="56" stroke="#3a2410" stroke-width="1.1"/>
+  </svg>`,
+  otter:`<svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="River otter">
+    <ellipse cx="26" cy="26" rx="8" ry="8" fill="#6b4a2e"/>
+    <ellipse cx="74" cy="26" rx="8" ry="8" fill="#6b4a2e"/>
+    <ellipse cx="50" cy="46" rx="30" ry="32" fill="#7a5232"/>
+    <ellipse cx="50" cy="60" rx="19" ry="18" fill="#cdb089"/>
+    <circle cx="39" cy="42" r="3" fill="#1c1308"/>
+    <circle cx="61" cy="42" r="3" fill="#1c1308"/>
+    <ellipse cx="50" cy="56" rx="6.5" ry="5" fill="#241608"/>
+    <line x1="14" y1="54" x2="40" y2="58" stroke="#2a1c0c" stroke-width="1"/>
+    <line x1="14" y1="60" x2="40" y2="61" stroke="#2a1c0c" stroke-width="1"/>
+    <line x1="60" y1="58" x2="86" y2="54" stroke="#2a1c0c" stroke-width="1"/>
+    <line x1="60" y1="61" x2="86" y2="60" stroke="#2a1c0c" stroke-width="1"/>
+  </svg>`
+};
+
+const PAW = `<svg class="paw" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor">
+  <!-- heel / metacarpal pad: rounded with a bilobed base, like a canid track -->
+  <path d="M32 32.5 C25.5 32.5 18.6 36.6 17.6 44 C16.8 50.2 19.9 55.4 25.2 56 C28.2 56.3 30 53 32 53 C34 53 35.8 56.3 38.8 56 C44.1 55.4 47.2 50.2 46.4 44 C45.4 36.6 38.5 32.5 32 32.5 Z"/>
+  <!-- four toe pads, fanned and tapered, the middle pair leading -->
+  <ellipse cx="23" cy="18.5" rx="5" ry="7.1" transform="rotate(-13 23 18.5)"/>
+  <ellipse cx="41" cy="18.5" rx="5" ry="7.1" transform="rotate(13 41 18.5)"/>
+  <ellipse cx="11.5" cy="30" rx="4.6" ry="6.6" transform="rotate(-31 11.5 30)"/>
+  <ellipse cx="52.5" cy="30" rx="4.6" ry="6.6" transform="rotate(31 52.5 30)"/>
+  <!-- claw marks above each toe (wild canid, not cat) -->
+  <ellipse cx="21" cy="8.6" rx="1.5" ry="2.7" transform="rotate(-13 21 8.6)"/>
+  <ellipse cx="43" cy="8.6" rx="1.5" ry="2.7" transform="rotate(13 43 8.6)"/>
+  <ellipse cx="7.2" cy="22.6" rx="1.4" ry="2.6" transform="rotate(-31 7.2 22.6)"/>
+  <ellipse cx="56.8" cy="22.6" rx="1.4" ry="2.6" transform="rotate(31 56.8 22.6)"/>
+</svg>`;
+
+/* 16 Yellowstone species. svg key overrides emoji where set. */
+const ANIMALS = [
+  {key:"bison",  name:"Bison",            svg:"bison",
+    fact:"North America's largest land animal — up to 2,000 lb, yet it can sprint at 35 mph."},
+  {key:"wolf",   name:"Gray Wolf",        emoji:"🐺",
+    fact:"Returned to the park in 1995. As packs thinned the elk herds, willows recovered and rivers steadied."},
+  {key:"bear",   name:"Grizzly Bear",     emoji:"🐻",
+    fact:"It can smell food from over a mile away and pack on three pounds a day before denning for winter."},
+  {key:"elk",    name:"Elk",              emoji:"🦌",
+    fact:"The park's most abundant large mammal. In autumn, bull elk bugle to challenge rivals and gather harems."},
+  {key:"eagle",  name:"Bald Eagle",       emoji:"🦅",
+    fact:"It builds some of the largest tree nests of any North American bird, adding to the same nest for years."},
+  {key:"otter",  name:"River Otter",      svg:"otter",
+    fact:"Fast and playful in water, it seals its nostrils and ears to dive and hunt beneath winter ice."},
+  {key:"beaver", name:"American Beaver",  svg:"beaver",
+    fact:"A natural engineer — its dams flood meadows into wetlands that dozens of other species depend on."},
+  {key:"fox",    name:"Red Fox",          emoji:"🦊",
+    fact:"It hunts by sound, leaping high to punch through deep snow onto voles it cannot even see."},
+  {key:"sheep",  name:"Bighorn Sheep",    emoji:"🐏",
+    fact:"Rams collide at 20 mph; a double layer of bone across the skull absorbs the shock of the clash."},
+  {key:"swan",   name:"Trumpeter Swan",   emoji:"🦢",
+    fact:"North America's heaviest native waterfowl, spanning over seven feet from wingtip to wingtip."},
+  {key:"trout",  name:"Cutthroat Trout",  emoji:"🐟",
+    fact:"Named for the red slash beneath its jaw, it is a keystone meal for bears, otters, and eagles alike."},
+  {key:"hare",   name:"Snowshoe Hare",    emoji:"🐇",
+    fact:"It molts from brown to white each winter and grows wide, furred feet that work like snowshoes."},
+  {key:"owl",    name:"Great Gray Owl",   emoji:"🦉",
+    fact:"It can hear a vole moving under a foot of snow, then plunge through the crust to seize it."},
+  {key:"badger", name:"American Badger",  emoji:"🦡",
+    fact:"A powerful digger that sometimes teams up with a coyote to corner ground squirrels underground."},
+  {key:"chip",   name:"Uinta Chipmunk",   emoji:"🐿️",
+    fact:"It packs seeds into cheek pouches that can stretch nearly to the width of its own body."},
+  {key:"snake",  name:"Garter Snake",     emoji:"🐍",
+    fact:"The park's most common reptile, often seen swimming after fish and frogs along stream edges."}
+];
+
+const DIFF = { easy:8, medium:12, hard:16 }; // pairs
+
+const state = {
+  diff:"easy",
+  deck:[],
+  first:null,
+  lock:false,
+  moves:0,
+  matched:0,
+  total:0,
+  startedAt:0,
+  tick:null,
+  best:{easy:null,medium:null,hard:null}
+};
+
+function iconHTML(a){ return a.svg ? SVG[a.svg] : `<span>${a.emoji}</span>`; }
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function fmtTime(ms){
+  const s=Math.floor(ms/1000);
+  return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+}
+
+function startClock(){
+  stopClock();
+  state.startedAt=Date.now();
+  state.tick=setInterval(()=>{
+    $("#sTime").textContent=fmtTime(Date.now()-state.startedAt);
+  },250);
+}
+function stopClock(){ if(state.tick){clearInterval(state.tick);state.tick=null;} }
+
+function setBestDisplay(){
+  const b=state.best[state.diff];
+  $("#sBest").textContent = b==null ? "—" : b;
+}
+
+function newRound(){
+  stopClock();
+  state.first=null; state.lock=false;
+  state.moves=0; state.matched=0;
+  const pairs=DIFF[state.diff];
+  state.total=pairs;
+
+  const pick=shuffle(ANIMALS.slice()).slice(0,pairs);
+  const cards=[];
+  pick.forEach(a=>{ cards.push({a}); cards.push({a}); });
+  state.deck=shuffle(cards);
+
+  // HUD reset
+  $("#sMoves").textContent="0";
+  $("#sTime").textContent="0:00";
+  $("#sPairs").textContent=`0/${pairs}`;
+  setBestDisplay();
+
+  // field note reset
+  $("#noteBody").hidden=true;
+  $("#noteEmpty").hidden=false;
+  $("#note").classList.remove("show");
+  void $("#note").offsetWidth;
+  $("#note").classList.add("show");
+
+  // build board
+  const board=$("#board");
+  board.innerHTML="";
+  state.deck.forEach((c,i)=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="card";
+    btn.setAttribute("aria-label","Card, face down");
+    btn.innerHTML=
+      `<div class="inner">
+        <div class="face back">${PAW}</div>
+        <div class="face front">
+          <div class="spec">${iconHTML(c.a)}</div>
+          <div class="nm">${c.a.name}</div>
+        </div>
+      </div>`;
+    btn.addEventListener("click",()=>onPick(i,btn));
+    c.el=btn; c.flipped=false; c.matched=false;
+    board.appendChild(btn);
+  });
+}
+
+function onPick(i,btn){
+  const c=state.deck[i];
+  if(state.lock||c.flipped||c.matched) return;
+  if(state.matched===0 && !state.first && !state.tick) startClock();
+
+  flip(c,true);
+
+  if(!state.first){ state.first=c; return; }
+
+  // second pick → a move
+  state.moves++;
+  $("#sMoves").textContent=state.moves;
+  const a=state.first; state.first=null;
+
+  if(a.a.key===c.a.key){
+    a.matched=c.matched=true;
+    a.el.classList.add("matched"); c.el.classList.add("matched");
+    a.el.setAttribute("aria-label","Matched: "+a.a.name);
+    c.el.setAttribute("aria-label","Matched: "+c.a.name);
+    state.matched++;
+    $("#sPairs").textContent=`${state.matched}/${state.total}`;
+    burstBetween(a.el,c.el);
+    showNote(c.a);
+    if(state.matched===state.total) finish();
+  } else {
+    state.lock=true;
+    setTimeout(()=>{
+      flip(a,false); flip(c,false);
+      state.lock=false;
+    },820);
+  }
+}
+
+function flip(c,on){
+  c.flipped=on;
+  c.el.classList.toggle("flipped",on);
+  if(!c.matched) c.el.setAttribute("aria-label", on ? c.a.name : "Card, face down");
+}
+
+function showNote(a){
+  $("#noteEmpty").hidden=true;
+  $("#noteBody").hidden=false;
+  $("#noteIc").innerHTML=iconHTML(a);
+  $("#noteName").textContent=a.name;
+  $("#noteFact").textContent=a.fact;
+  const n=$("#note");
+  n.classList.remove("show");
+  void n.offsetWidth;
+  n.classList.add("show");
+}
+
+/* ---- match burst ---- */
+const REDUCED = window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const BURST_COLORS = ["#1C7FA0","#34B0A0","#7DB23E","#E9B53D","#DD7A2E","#B0431F"];
+let fxLayer=null;
+function getFxLayer(){
+  if(!fxLayer){
+    fxLayer=document.createElement("div");
+    fxLayer.className="fx-layer";
+    document.body.appendChild(fxLayer);
+  }
+  return fxLayer;
+}
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+function burstBetween(el1,el2){
+  if(REDUCED) return;
+  const r1=el1.getBoundingClientRect(), r2=el2.getBoundingClientRect();
+  const x=(r1.left+r1.right+r2.left+r2.right)/4;
+  const y=(r1.top+r1.bottom+r2.top+r2.bottom)/4;
+  burstAt(x,y);
+}
+
+function burstAt(x,y){
+  const layer=getFxLayer();
+
+  // shockwave ring
+  const ring=document.createElement("div");
+  ring.className="fx-ring";
+  ring.style.left=x+"px"; ring.style.top=y+"px";
+  ring.addEventListener("animationend",()=>ring.remove());
+  layer.appendChild(ring);
+
+  // radial sparks
+  const n=22;
+  for(let i=0;i<n;i++){
+    const p=document.createElement("div");
+    p.className="spark";
+    const ang=(Math.PI*2)*(i/n)+rnd(-0.18,0.18);
+    const dist=rnd(46,104);
+    const x1=Math.cos(ang)*dist;          // radial horizontal
+    const y1=Math.sin(ang)*dist;          // radial vertical (up or down)
+    const x2=x1+rnd(-14,14);              // slight horizontal drift while falling
+    const y2=y1+rnd(120,210);             // gravity: keep falling past the radial point
+    const s=rnd(7,14);
+    p.style.left=x+"px"; p.style.top=y+"px";
+    p.style.width=s+"px"; p.style.height=s+"px";
+    p.style.background=BURST_COLORS[i%BURST_COLORS.length];
+    if(Math.random()<0.4) p.style.borderRadius="50%";
+    p.style.setProperty("--x",x1.toFixed(1)+"px");
+    p.style.setProperty("--y1",y1.toFixed(1)+"px");
+    p.style.setProperty("--x2",x2.toFixed(1)+"px");
+    p.style.setProperty("--y2",y2.toFixed(1)+"px");
+    p.style.setProperty("--rot",rnd(-320,320).toFixed(0)+"deg");
+    p.style.setProperty("--dur",rnd(2600,3400).toFixed(0)+"ms");
+    p.addEventListener("animationend",()=>p.remove());
+    layer.appendChild(p);
+  }
+}
+
+function rankFor(moves,pairs){
+  const r=moves/pairs; // 1.0 == flawless
+  if(r<=1.25) return "Chief Naturalist";
+  if(r<=1.6)  return "Senior Ranger";
+  if(r<=2.1)  return "Field Ranger";
+  return "Junior Ranger";
+}
+
+function finish(){
+  stopClock();
+  const elapsed=Date.now()-state.startedAt;
+  const b=state.best[state.diff];
+  if(b==null||state.moves<b) state.best[state.diff]=state.moves;
+  setBestDisplay();
+
+  $("#winRank").textContent=rankFor(state.moves,state.total);
+  $("#winRun").textContent=
+    `${state.total} pairs · ${state.moves} moves · ${fmtTime(elapsed)}`;
+
+  // field guide of matched animals, in board order, de-duped
+  const seen=new Set(); const list=[];
+  state.deck.forEach(c=>{ if(!seen.has(c.a.key)){seen.add(c.a.key);list.push(c.a);} });
+  const guide=$("#guide");
+  guide.innerHTML="";
+  list.forEach(a=>{
+    const e=document.createElement("div");
+    e.className="entry";
+    e.innerHTML=`<div class="ic">${iconHTML(a)}</div>
+      <div class="tx"><h3>${a.name}</h3><p>${a.fact}</p></div>`;
+    guide.appendChild(e);
+  });
+
+  const ov=$("#overlay");
+  const reveal=()=>{ ov.classList.add("show"); $("#again").focus(); };
+  if(REDUCED) reveal(); else setTimeout(reveal,1200);
+}
+
+/* difficulty buttons */
+document.querySelectorAll('.seg button').forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll('.seg button').forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+    state.diff=b.dataset.diff;
+    newRound();
+  });
+});
+
+$("#newRound").addEventListener("click",newRound);
+$("#again").addEventListener("click",()=>{
+  $("#overlay").classList.remove("show");
+  newRound();
+});
+
+/* boot */
+newRound();
+</script>
+</body>
+</html>
